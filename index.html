@@ -187,7 +187,7 @@ h2{font-size:clamp(25px,3.7vw,44px);font-weight:800;line-height:1.07;letter-spac
         <div class="uc"><h3>Trains</h3><div class="what">Slack-triggered SDLC + daily H5 perf watcher.</div><div class="m"><div><div class="v">86</div><div class="k">PRs delivered</div></div><div><div class="v">72%</div><div class="k">success</div></div></div></div>
         <div class="uc"><h3>Check-in</h3><div class="what">Crash → auto-fix PR on travel-checkin-platform.</div><div class="m"><div><div class="v">15</div><div class="k">PRs delivered</div></div><div><div class="v">74%</div><div class="k">success</div></div></div></div>
         <div class="uc"><h3>Figma</h3><div class="what">Figma designs → front-end code on flights-adlc.</div><div class="m"><div><div class="v">90–95%</div><div class="k">Figma match</div></div><div><div class="v">1</div><div class="k">PR delivered</div></div></div></div>
-        <div class="uc"><h3>Vuln</h3><div class="what">Security findings auto-fixed and raised as PRs.</div><div class="m"><div><div class="v">1</div><div class="k">dedicated PR</div></div><div><div class="v">Ark-ready</div><div class="k">Mon 9 AM sweep</div></div></div></div>
+        <div class="uc"><h3>Vuln</h3><div class="what">Security findings → PRs; hardening on Trains (code vs config).</div><div class="m"><div><div class="v">1</div><div class="k">dedicated PR</div></div><div><div class="v">in prog.</div><div class="k">Trains first</div></div></div></div>
       </div>
     </div>
   </section>
@@ -211,11 +211,12 @@ h2{font-size:clamp(25px,3.7vw,44px);font-weight:800;line-height:1.07;letter-spac
         <div class="col after"><div class="tag">Now — one gated train</div><h4>Triggered once, records everything</h4><ul>
           <li><b>One train, 7 stages, triggered once</b> — Jenkins starts it; no one clicks Build or Deploy.</li>
           <li><b>Ephemeral env</b>: a real stack is brought up, <b>automated regression</b> (backend + mweb) runs against it, then it&rsquo;s torn down — cleanup on every path, pass or fail.</li>
+          <li><b>Hard gates now enforced</b> that used to live in people&rsquo;s heads — Build (lint/tests), Regression, <b>ancestor-of-master</b>, <b>production-branch</b>, and QA <b>sign-off</b> — each blocks or refuses, recorded per commit.</li>
           <li><b>One record per commit</b>: which gates passed, which image each service got, which commit produced it — queryable, not remembered.</li>
           <li>On a break, the pipeline <b>explains itself in Slack</b>, log quoted, before anyone asks.</li>
         </ul></div>
       </div>
-      <div class="proof"><div class="p"><div class="v">35&rarr;1</div><div class="k">pipelines → one train</div></div><div class="sep"></div><div class="p"><div class="v">2&rarr;0</div><div class="k">manual clicks / release</div></div><div class="sep"></div><div class="p"><div class="v">7</div><div class="k">recorded gates</div></div><div class="sep"></div><div class="p"><div class="v">only changed</div><div class="k">services rebuilt</div></div></div>
+      <div class="proof"><div class="p"><div class="v">35&rarr;1</div><div class="k">pipelines → one train</div></div><div class="sep"></div><div class="p"><div class="v">2&rarr;0</div><div class="k">manual clicks / release</div></div><div class="sep"></div><div class="p"><div class="v">5</div><div class="k">hard gates enforced</div></div><div class="sep"></div><div class="p"><div class="v">only changed</div><div class="k">services rebuilt</div></div></div>
       <div class="assume">Flights Release Train, Oct 2026. Ephemeral env = real-stack bring-up → regression → teardown, triggered once under a release lock. Regression currently reports; making it blocking is a deliberate next step.</div>
     </div>
   </section>
@@ -302,20 +303,20 @@ const UC=[
    proof:[["86","PRs delivered"],["72%","success"],["53","scheduled perf runs"]]},
   {kick:"Use case 05 · Code Quality",name:"Sonar — continuous auto-fix",what:"Sonar findings auto-fixed and raised as PRs, on Trains FE and Check-in (tech-trains-sonar-continuous, checkin-ai-sonar-fix) — a quality gate that holds at scale. Fix tickets land on the <a href='https://mypaytm.atlassian.net/browse/TU-27749' target='_blank' rel='noopener' style='text-decoration:underline'>Sonar burndown board (TU-27749)</a>; findings come from the <a href='https://sonar-11.central.pipeline.mypaytm.com/dashboard?id=travel-trains-platform' target='_blank' rel='noopener' style='text-decoration:underline'>SonarQube dashboard</a>.",
    before:["Static-analysis debt piles up for a quarterly <b>cleanup sprint</b> that stalls feature work.","Findings age; some never get fixed."],
-   after:["Findings are fixed <b>continuously</b>, one PR at a time, in the background — a <b>quality gate at scale</b>, no cleanup sprint.","The broader <b>Sonar bug-automation</b> flow is <b>designed and ready</b>; next it scales once DevOps clears <b>VPC peering + proxy</b>.","Ran clean this window."],
-   proof:[["225","PRs delivered"],["99%","success"],["designed","bug-automation — DevOps-blocked"]]},
+   after:["Live on the <b>Trains monorepo</b> (VPC peering cleared 1 Oct). A <b>Monday watcher</b> pulls new findings into Jira, flags repeats via a one-week cache, and Ark raises the PRs — a <b>quality gate at scale</b>, no cleanup sprint.","<b>Next: rule-based picking</b> — by severity then rule, ~10 issues a batch, one rule a week — with a two-scheduler split (create tickets in the morning, fix in the evening).","Deploy stays manual (PR creation only); the same flow is replicable to <b>Bus &amp; Flights</b>."],
+   proof:[["225","PRs delivered"],["99%","success"],["Trains","→ Bus &amp; Flights next"]]},
   {kick:"Use case 06 · Check-in",name:"Check-in — crash → PR",what:"A scheduled scan of top Firebase Crashlytics clusters → an auto-fix PR, on the Check-in workspace (travel-checkin-platform).",
    before:["A crash is triaged by hand; the fix waits for someone to reproduce and patch it.","Crash MTTR stretches across releases."],
    after:["A <b>scheduled scan</b> of top Crashlytics clusters becomes <b>auto-fix PRs</b> for review.","Crash MTTR sharply cut.","<b>74%</b> of this window's runs succeeded."],
    proof:[["15","PRs delivered"],["74%","success"],["≈87 hrs","eng-hours absorbed"]]},
   {kick:"Use case 07 · Figma",name:"Figma → UI — design to code",what:"Figma designs turned into front-end code by agents, on the flights-adlc flow — in connector pilot, matched to the design at ~90–95%.",
    before:["A front-end engineer reads the Figma, hand-codes the screen, then pixel-tweaks to match the spec.","Design-to-code is slow and drifts from the design."],
-   after:["The flow generates the screen from the Figma and opens the PR, <b>~90–95% matched</b> to the design.","In <b>connector pilot</b> with <b>successful runs</b> already landing PRs; engineers refine the last few percent instead of building from scratch."],
+   after:["The flow generates the screen from the Figma and opens the PR, <b>~90–95% matched</b> to the design.","In <b>connector pilot</b> with <b>successful runs</b> already landing PRs; engineers refine the last few percent instead of building from scratch.","Piloting a <b>new standard Ark Figma connector</b> (reads Figma links, PNGs, screenshots + the ticket → UI-fix PR); <b>Bus team onboards first</b>, then it&rsquo;s announced platform-wide."],
    proof:[["90–95%","Figma match"],["pilot","Figma connector"],["live","successful runs"]]},
-  {kick:"Use case 08 · Vuln",name:"Vuln — security auto-fix",what:"Security / vulnerability findings auto-fixed and raised as PRs — a Monday-9AM scheduled sweep, tag-filtered by surface and routed infra-vs-code (tech-sec-vuln-intake + flights-adlc).",
+  {kick:"Use case 08 · Vuln",name:"Vuln — security auto-fix",what:"Security / vulnerability findings auto-fixed and raised as PRs. Being hardened — tickets are triaged and <b>labelled code vs config</b> (Ark fixes the code issues), and the flow is moving to <b>Trains end-to-end first</b>, then back to Flights.",
    before:["Vuln findings queue for a security review, then wait for an engineer to patch each one.","Advisories age; some linger unfixed; who owns which fix is unclear."],
-   after:["A <b>Monday 9 AM scheduler</b> sweeps new findings, <b>tag-filtered</b> by surface (flights / trains) and <b>routed infra vs code</b> to the right fix path.","<b>Four production tickets</b> this window (TU-27900, TU-27967, TU-28480, TU-28356) ran on the <b>flights-adlc</b> flow — so they count under Flights; the dedicated Vuln automation is ramping (1 PR in-window).","<b>Ark-ready</b>: faster remediation, with clear accountability per finding."],
-   proof:[["1","dedicated-flow PR"],["Ark-ready","Mon 9 AM sweep"],["4","prod tickets (via flights)"]]},
+   after:["Tickets are triaged and <b>labelled code-vs-config</b> — Ark picks up the <b>Ark-ready code</b> issues; config issues stay with engineers.","Early <b>Flights</b> PRs were getting <b>declined</b> (ticket attachments missed), so the flow is being <b>re-approached on Trains</b> end-to-end first, with Sourabh.","Real Ark vuln PRs already landed on Trains (<b>#788</b>; <b>#798 merged to master</b>) — full autonomy is the next step."],
+   proof:[["in&nbsp;progress","hardening on Trains"],["code · config","ticket triage"],["#788 / #798","early Trains PRs"]]},
 ];
 const SAMPLE=[
  {t:"TF-36917",d:"Flights ADLC delivery (Ankur's showcase run)",pr:"https://bitbucket.org/paytmteam/travel-flights-platform/pull-requests/2688",prn:"travel-flights-platform #2688",sid:"s-trqjlt9r53"},
