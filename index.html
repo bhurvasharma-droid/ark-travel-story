@@ -195,6 +195,47 @@ h2{font-size:clamp(25px,3.7vw,44px);font-weight:800;line-height:1.07;letter-spac
   <!-- per use case injected by JS -->
   <div id="ucslides"></div>
 
+  <!-- DEVOPS 1 — THE RELEASE TRAIN -->
+  <section class="slide">
+    <div class="wrap">
+      <div class="uc-head"><span class="uc-kick">DevOps · Flights Platform CI/CD</span></div>
+      <h2>The Release Train — 35 pipelines → one gated train.</h2>
+      <p class="uc-what">From a pipeline per service and a human clicking Build, to <b>one gated train</b> — an ephemeral stack brought up, automated regression run against it, then torn down — that records what shipped and explains itself when it breaks.</p>
+      <div class="ba">
+        <div class="col before"><div class="tag">Before — 35 manual pipelines</div><h4>A person clicking through each one</h4><ul>
+          <li><b>35 services</b>, one multi-branch pipeline each, <b>two manual clicks</b> (Build, Deploy) per release.</li>
+          <li>No record of which commit produced which image — nothing could answer <b>&ldquo;what&rsquo;s running in prod?&rdquo;</b></li>
+          <li>Hotfixes shipped to prod, never merged back, <b>silently lost</b> on the next release.</li>
+          <li>Every red build = <b>20&ndash;40 min</b> of a senior engineer reading logs.</li>
+        </ul></div>
+        <div class="col after"><div class="tag">Now — one gated train</div><h4>Triggered once, records everything</h4><ul>
+          <li><b>One train, 7 stages, triggered once</b> — Jenkins starts it; no one clicks Build or Deploy.</li>
+          <li><b>Ephemeral env</b>: a real stack is brought up, <b>automated regression</b> (backend + mweb) runs against it, then it&rsquo;s torn down — cleanup on every path, pass or fail.</li>
+          <li><b>One record per commit</b>: which gates passed, which image each service got, which commit produced it — queryable, not remembered.</li>
+          <li>On a break, the pipeline <b>explains itself in Slack</b>, log quoted, before anyone asks.</li>
+        </ul></div>
+      </div>
+      <div class="proof"><div class="p"><div class="v">35&rarr;1</div><div class="k">pipelines → one train</div></div><div class="sep"></div><div class="p"><div class="v">2&rarr;0</div><div class="k">manual clicks / release</div></div><div class="sep"></div><div class="p"><div class="v">7</div><div class="k">recorded gates</div></div><div class="sep"></div><div class="p"><div class="v">only changed</div><div class="k">services rebuilt</div></div></div>
+      <div class="assume">Flights Release Train, Oct 2026. Ephemeral env = real-stack bring-up → regression → teardown, triggered once under a release lock. Regression currently reports; making it blocking is a deliberate next step.</div>
+    </div>
+  </section>
+
+  <!-- DEVOPS 2 — EXPLAINS ITSELF -->
+  <section class="slide dark">
+    <div class="wrap">
+      <div class="uc-head"><span class="uc-kick">DevOps · when it breaks</span></div>
+      <h2>A pipeline that explains its own failures.</h2>
+      <p class="uc-what">When a stage fails, only the logs that bear on it are gathered; a model reads them, finds the one thing that broke, and posts a <b>verdict with proof</b> to Slack — every claim quoting the log <b>word for word</b>, or saying it could not tell rather than guessing.</p>
+      <div class="uc-grid">
+        <div class="uc"><h3>Re-run</h3><div class="what">Infrastructure hiccup — nothing to fix.</div></div>
+        <div class="uc"><h3>Fix code</h3><div class="what">A person must change something.</div></div>
+        <div class="uc"><h3>Wait</h3><div class="what">Another release holds the train.</div></div>
+        <div class="uc"><h3>Needs a human</h3><div class="what">It could not tell — and says so.</div></div>
+      </div>
+      <div class="proof"><div class="p"><div class="v">per-commit</div><div class="k">image ↔ commit, traceable</div></div><div class="sep"></div><div class="p"><div class="v">4 verdicts</div><div class="k">every failure classified</div></div><div class="sep"></div><div class="p"><div class="v">20&ndash;40 min &rarr; 0</div><div class="k">manhunt → Slack message</div></div></div>
+    </div>
+  </section>
+
   <!-- CLOSE -->
   <section class="slide grad">
     <div class="wrap">
